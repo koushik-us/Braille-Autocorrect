@@ -1,31 +1,37 @@
 # Braille Autocorrect
 
-A simple Braille input auto-correct and suggestion tool.  
-This project helps users who type Braille using a standard QWERTY keyboard, by suggesting the closest correct word from a dictionary, even if there are typos or mistakes in the input.
+Braille Autocorrect is a simple and efficient tool designed to assist users who input Braille using a
+standard QWERTY keyboard. It helps identify and suggest the most likely intended word from a
+predefined dictionary, even if there are minor typing errors or mismatches in the Braille input.
 
-- Suggests the most likely intended word based on Braille input, even with errors.
-- Maps QWERTY keys (D, W, Q, K, O, P) to Braille dot positions.
-- Simple and beginner-friendly logic—no advanced algorithms required.
-- Fast and lightweight (C++).
+- Accurately suggests the intended word based on Braille input-even when there are small mistakes.
+- Uses specific QWERTY keys (D, W, Q, K, O, P) to represent Braille dot positions.
+- Developed with a simple, beginner-friendly approach-no advanced algorithms required.
+- Lightweight and fast, written in C++ for optimal performance.
 
-## How it Works
+# How It Works
 
-- Users type Braille letters using specific QWERTY keys (for example, `D K|D|D O K` for the word "cat").
-- The program checks the input against a dictionary of valid words.
-- It calculates the number of differences and suggests the closest match, helping visually impaired users avoid mistakes.
+Users enter Braille characters by pressing specific QWERTY keys that correspond to Braille dot
+positions. Each letter is separated by a pipe (|). For instance, the input:
+D K|D|D O K
+represents the word "cat" in Braille.
+The program reads this input, converts it into Braille dot patterns, and compares it with a list of valid
+words. It then calculates the difference between the input and each dictionary word, and suggests
+the closest match. This is especially useful for visually impaired users to reduce input mistakes and
+receive helpful suggestions.
 
-## Usage
-1. Compile:
-    ```
-    g++ braille-autocorrect.cpp -o braille-autocorrect
-    ```
-2. Run:
-    ```
-    ./braille-autocorrect
-    ```
+# How to Use
 
-3. Enter your Braille input when prompted.  
-   Example for "cat":
+1. Compile the program using:
 
-If you type:D K|D|D O
-output would be : Did you mean: cat?
+g++ braille-autocorrect.cpp -o braille-autocorrect
+
+2. Run the executable:
+
+./braille-autocorrect
+
+3. Enter your Braille input when prompted.
+
+Example:
+Input: D K|D|D O
+Output: Did you mean: cat?
