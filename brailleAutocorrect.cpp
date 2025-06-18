@@ -5,7 +5,7 @@
 #include <algorithm>
 using namespace std;
 
-unordered_map<char, int> keyToDot = {
+unordered_map<char, int> qwertyToDot = {
     {'D', 1},
     {'W', 2},
     {'Q', 3},
@@ -14,7 +14,7 @@ unordered_map<char, int> keyToDot = {
     {'P', 6}
 };
 
-unordered_map<char, int> letterToBraille = {
+unordered_map<char, int> charToBrailleCode = {
     {'a', 0b000001},
     {'b', 0b000011},
     {'c', 0b000101},
@@ -28,82 +28,83 @@ unordered_map<char, int> letterToBraille = {
     {'t', 0b111000}
 };
 
-int inputToBraille(const string& input) {
-    int mask = 0;
-    for(char c : input) {
-        c = toupper(c);
-        if(keyToDot.count(c)) {
-            int bit = keyToDot[c];
-            mask |= (1 << (bit-1));
+int parseBrailleInput(const string& brailleKeys) {
+    int brailleMask = 0;
+    for(char ch : brailleKeys) {
+        ch = toupper(ch);
+        if(qwertyToDot.count(ch)) {
+            int bitPosition = qwertyToDot[ch];
+            brailleMask |= (1 << (bitPosition - 1));
         }
     }
-    return mask;
+    return brailleMask;
 }
 
-vector<int> wordToBrailleVec(const string& word) {
-    vector<int> res;
-    for(char c : word) {
-        if(letterToBraille.count(tolower(c)))
-            res.push_back(letterToBraille[tolower(c)]);
+vector<int> convertWordToBraille(const string& word) {
+    vector<int> brailleVector;
+    for(char ch : word) {
+        if(charToBrailleCode.count(tolower(ch)))
+            brailleVector.push_back(charToBrailleCode[tolower(ch)]);
         else
-            res.push_back(0);
+            brailleVector.push_back(0);
     }
-    return res;
+    return brailleVector;
 }
 
-int simpleDifference(const vector<int>& a, const vector<int>& b) {
-    int n = min(a.size(), b.size());
-    int diff = 0;
-    for(int i = 0; i < n; ++i) {
-        if(a[i] != b[i]) diff++;
+int calculateDifference(const vector<int>& a, const vector<int>& b) {
+    int len = min(a.size(), b.size());
+    int difference = 0;
+    for(int i = 0; i < len; ++i) {
+        if(a[i] != b[i]) difference++;
     }
-    diff += abs((int)a.size() - (int)b.size());
-    return diff;
+    difference += abs((int)a.size() - (int)b.size());
+    return difference;
 }
 
-string suggestWord(
-    const vector<vector<int>>& dictionaryBraille,
-    const vector<string>& dictionaryWords,
-    const vector<int>& userInputBraille
+string findClosestMatch(
+    const vector<vector<int>>& brailleDictionary,
+    const vector<string>& wordDictionary,
+    const vector<int>& userBrailleInput
 ) {
-    int minDiff = 1e9;
-    string bestWord = "";
-    for(size_t i = 0; i < dictionaryBraille.size(); ++i) {
-        int diff = simpleDifference(userInputBraille, dictionaryBraille[i]);
-        if(diff < minDiff) {
-            minDiff = diff;
-            bestWord = dictionaryWords[i];
+    int smallestDifference = 1e9;
+    string closestWord = "";
+    for(size_t i = 0; i < brailleDictionary.size(); ++i) {
+        int diff = calculateDifference(userBrailleInput, brailleDictionary[i]);
+        if(diff < smallestDifference) {
+            smallestDifference = diff;
+            closestWord = wordDictionary[i];
         }
     }
-    return bestWord;
+    return closestWord;
 }
 
 int main() {
-    vector<string> dictionary = {"cat", "bat", "rat", "mat"};
-    vector<vector<int>> dictionaryBraille;
-    for(const string& w : dictionary)
-        dictionaryBraille.push_back(wordToBrailleVec(w));
+    vector<string> wordList = {"cat", "bat", "rat", "mat"};
+    vector<vector<int>> brailleEncodings;
+    for(const string& word : wordList)
+        brailleEncodings.push_back(convertWordToBraille(word));
 
     cout << "Type your Braille input (e.g. D K|D|D O K for 'cat')\n";
     cout << "Use | as a separator between letters.\n";
     cout << "Input: ";
-    string line;
-    getline(cin, line);
+    string inputLine;
+    getline(cin, inputLine);
 
-    vector<int> userBraille;
-    size_t pos = 0, next;
-    while ((next = line.find('|', pos)) != string::npos) {
-        string keys = line.substr(pos, next-pos);
-        keys.erase(remove_if(keys.begin(), keys.end(), ::isspace), keys.end());
-        userBraille.push_back(inputToBraille(keys));
-        pos = next + 1;
+    vector<int> userInputBraille;
+    size_t start = 0, delim;
+    while ((delim = inputLine.find('|', start)) != string::npos) {
+        string letterKeys = inputLine.substr(start, delim - start);
+        letterKeys.erase(remove_if(letterKeys.begin(), letterKeys.end(), ::isspace), letterKeys.end());
+        userInputBraille.push_back(parseBrailleInput(letterKeys));
+        start = delim + 1;
     }
-    string keys = line.substr(pos);
-    keys.erase(remove_if(keys.begin(), keys.end(), ::isspace), keys.end());
-    userBraille.push_back(inputToBraille(keys));
+    string lastLetter = inputLine.substr(start);
+    lastLetter.erase(remove_if(lastLetter.begin(), lastLetter.end(), ::isspace), lastLetter.end());
+    userInputBraille.push_back(parseBrailleInput(lastLetter));
 
-    string suggestion = suggestWord(dictionaryBraille, dictionary, userBraille);
+    string suggestion = findClosestMatch(brailleEncodings, wordList, userInputBraille);
     cout << "Did you mean: " << suggestion << "?\n";
 
     return 0;
 }
+
