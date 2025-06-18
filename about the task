@@ -1,0 +1,31 @@
+# Braille Autocorrect
+
+A simple Braille input auto-correct and suggestion tool.  
+This project helps users who type Braille using a standard QWERTY keyboard, by suggesting the closest correct word from a dictionary, even if there are typos or mistakes in the input.
+
+- Suggests the most likely intended word based on Braille input, even with errors.
+- Maps QWERTY keys (D, W, Q, K, O, P) to Braille dot positions.
+- Simple and beginner-friendly logic—no advanced algorithms required.
+- Fast and lightweight (C++).
+
+## How it Works
+
+- Users type Braille letters using specific QWERTY keys (for example, `D K|D|D O K` for the word "cat").
+- The program checks the input against a dictionary of valid words.
+- It calculates the number of differences and suggests the closest match, helping visually impaired users avoid mistakes.
+
+## Usage
+1. Compile:
+    ```
+    g++ braille-autocorrect.cpp -o braille-autocorrect
+    ```
+2. Run:
+    ```
+    ./braille-autocorrect
+    ```
+
+3. Enter your Braille input when prompted.  
+   Example for "cat":
+
+If you type:D K|D|D O
+output would be : Did you mean: cat?
